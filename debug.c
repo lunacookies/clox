@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "debug.h"
+#include "value.h"
 
 void
 DisassembleChunk(chunk* Chunk, const char* Name)
@@ -11,6 +12,16 @@ DisassembleChunk(chunk* Chunk, const char* Name)
 	{
 		Offset = DisassembleInstruction(Chunk, Offset);
 	}
+}
+
+static usize
+ConstantInstruction(const char* Name, chunk* Chunk, usize Offset)
+{
+	u8 ConstantIndex = Chunk->Code[Offset + 1];
+	printf("%-16s %4d '", Name, ConstantIndex);
+	PrintValue(Chunk->Constants.Values[ConstantIndex]);
+	printf("'\n");
+	return Offset + 2;
 }
 
 static usize
@@ -28,6 +39,8 @@ DisassembleInstruction(chunk* Chunk, usize Offset)
 	u8 Instruction = Chunk->Code[Offset];
 	switch (Instruction)
 	{
+	case OP_CONSTANT:
+		return ConstantInstruction("OP_CONSTANT", Chunk, Offset);
 	case OP_RETURN:
 		return SimpleInstruction("OP_RETURN", Offset);
 	default:
