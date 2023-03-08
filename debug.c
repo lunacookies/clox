@@ -45,6 +45,16 @@ DisassembleInstruction(chunk* Chunk, usize Offset)
 	{
 	case OP_CONSTANT:
 		return ConstantInstruction("OP_CONSTANT", Chunk, Offset);
+	case OP_ADD:
+		return SimpleInstruction("OP_ADD", Offset);
+	case OP_SUBTRACT:
+		return SimpleInstruction("OP_SUBTRACT", Offset);
+	case OP_MULTIPLY:
+		return SimpleInstruction("OP_MULTIPLY", Offset);
+	case OP_DIVIDE:
+		return SimpleInstruction("OP_DIVIDE", Offset);
+	case OP_NEGATE:
+		return SimpleInstruction("OP_NEGATE", Offset);
 	case OP_RETURN:
 		return SimpleInstruction("OP_RETURN", Offset);
 	default:

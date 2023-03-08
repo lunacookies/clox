@@ -41,6 +41,13 @@ Run(void)
 {
 #define READ_BYTE() (*Vm.Ip++)
 #define READ_CONSTANT() (Vm.Chunk->Constants.Values[READ_BYTE()])
+#define BINARY_OP(Op)                                                          \
+	do                                                                     \
+	{                                                                      \
+		value B = Pop();                                               \
+		value A = Pop();                                               \
+		Push(A Op B);                                                  \
+	} while (false)
 
 	for (;;)
 	{
@@ -65,6 +72,24 @@ Run(void)
 			Push(Constant);
 			break;
 		}
+
+		case OP_ADD:
+			BINARY_OP(+);
+			break;
+		case OP_SUBTRACT:
+			BINARY_OP(-);
+			break;
+		case OP_MULTIPLY:
+			BINARY_OP(*);
+			break;
+		case OP_DIVIDE:
+			BINARY_OP(/);
+			break;
+
+		case OP_NEGATE:
+			Push(-Pop());
+			break;
+
 		case OP_RETURN:
 			PrintValue(Pop());
 			printf("\n");
@@ -74,6 +99,7 @@ Run(void)
 
 #undef READ_BYTE
 #undef READ_CONSTANT
+#undef BINARY_OP
 }
 
 interpret_result
