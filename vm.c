@@ -5,14 +5,35 @@
 
 vm Vm;
 
+static void
+ResetStack(void)
+{
+	Vm.StackTop = Vm.Stack;
+}
+
 void
 InitializeVm(void)
 {
+	ResetStack();
 }
 
 void
 FreeVm(void)
 {
+}
+
+void
+Push(value Value)
+{
+	*Vm.StackTop = Value;
+	Vm.StackTop++;
+}
+
+value
+Pop(void)
+{
+	Vm.StackTop--;
+	return *Vm.StackTop;
 }
 
 static interpret_result
@@ -24,6 +45,14 @@ Run(void)
 	for (;;)
 	{
 #ifdef DEBUG_TRACE_EXECUTION
+		printf("          ");
+		for (value* Slot = Vm.Stack; Slot < Vm.StackTop; Slot++)
+		{
+			printf("[ ");
+			PrintValue(*Slot);
+			printf(" ]");
+		}
+		printf("\n");
 		DisassembleInstruction(Vm.Chunk, Vm.Ip - Vm.Chunk->Code);
 #endif
 
@@ -33,11 +62,12 @@ Run(void)
 		case OP_CONSTANT:
 		{
 			value Constant = READ_CONSTANT();
-			PrintValue(Constant);
-			printf("\n");
+			Push(Constant);
 			break;
 		}
 		case OP_RETURN:
+			PrintValue(Pop());
+			printf("\n");
 			return INTERPRET_OK;
 		}
 	}
