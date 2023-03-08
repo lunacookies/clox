@@ -1,10 +1,13 @@
 #include "chunk.h"
 #include "common.h"
 #include "debug.h"
+#include "vm.h"
 
 int
 main(int ArgumentCount, const char** Arguments)
 {
+	InitializeVm();
+
 	chunk Chunk;
 	InitializeChunk(&Chunk);
 
@@ -15,6 +18,8 @@ main(int ArgumentCount, const char** Arguments)
 	WriteChunk(&Chunk, OP_RETURN, 123);
 
 	DisassembleChunk(&Chunk, "test chunk");
+	Interpret(&Chunk);
+	FreeVm();
 	FreeChunk(&Chunk);
 	return 0;
 }
