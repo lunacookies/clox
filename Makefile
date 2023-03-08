@@ -13,7 +13,8 @@ CFLAGS=\
 	-Wimplicit-int-conversion \
 	-Wshadow \
 	-Wstrict-prototypes \
-	-Wmissing-prototypes
+	-Wmissing-prototypes \
+	-Wno-unused-parameter
 
 NAME=clox
 BUILD_DIR=out
