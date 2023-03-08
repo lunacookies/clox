@@ -35,6 +35,10 @@ usize
 DisassembleInstruction(chunk* Chunk, usize Offset)
 {
 	printf("%04zu ", Offset);
+	if (Offset > 0 && Chunk->Lines[Offset] == Chunk->Lines[Offset - 1])
+		printf("   | ");
+	else
+		printf("%4d ", Chunk->Lines[Offset]);
 
 	u8 Instruction = Chunk->Code[Offset];
 	switch (Instruction)

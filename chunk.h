@@ -15,12 +15,13 @@ typedef struct
 	usize Count;
 	usize Capacity;
 	u8* Code;
+	u16* Lines;
 	value_array Constants;
 } chunk;
 
 void InitializeChunk(chunk* Chunk);
 void FreeChunk(chunk* Chunk);
-void WriteChunk(chunk* Chunk, u8 Byte);
+void WriteChunk(chunk* Chunk, u8 Byte, u16 Line);
 usize AddConstant(chunk* Chunk, value Value);
 
 #endif
