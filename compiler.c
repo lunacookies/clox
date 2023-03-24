@@ -13,6 +13,13 @@ typedef struct
 } parser;
 
 parser Parser;
+chunk* CompilingChunk;
+
+static chunk*
+CurrentChunk(void)
+{
+	return CompilingChunk;
+}
 
 static void
 ErrorAt(token* Token, const char* Message)
@@ -78,10 +85,36 @@ Consume(token_type Type, const char* Message)
 	ErrorAtCurrent(Message);
 }
 
+static void
+EmitByte(u8 Byte)
+{
+	WriteChunk(CurrentChunk(), Byte, Parser.Previous.Line);
+}
+
+static void
+EmitBytes(u8 Byte1, u8 Byte2)
+{
+	EmitByte(Byte1);
+	EmitByte(Byte2);
+}
+
+static void
+EmitReturn(void)
+{
+	EmitByte(OP_RETURN);
+}
+
+static void
+EndCompiler(void)
+{
+	EmitReturn();
+}
+
 bool
 Compile(const char* Source, chunk* Chunk)
 {
 	InitializeScanner(Source);
+	CompilingChunk = Chunk;
 
 	Parser.HadError = false;
 	Parser.PanicMode = false;
@@ -89,5 +122,6 @@ Compile(const char* Source, chunk* Chunk)
 	Advance();
 	Expression();
 	Consume(TOKEN_EOF, "Expect end of expression.");
+	EndCompiler();
 	return !Parser.HadError;
 }
