@@ -12,6 +12,21 @@ typedef struct
 	bool PanicMode;
 } parser;
 
+typedef enum
+{
+	PREC_NONE,
+	PREC_ASSIGNMENT, // =
+	PREC_OR, // or
+	PREC_AND, // and
+	PREC_EQUALITY, // == !=
+	PREC_COMPARISON, // < > <= >=
+	PREC_TERM, // + -
+	PREC_FACTOR, // * /
+	PREC_UNARY, // ! -
+	PREC_CALL, // . ()
+	PREC_PRIMARY
+} precedence;
+
 parser Parser;
 chunk* CompilingChunk;
 
@@ -104,10 +119,73 @@ EmitReturn(void)
 	EmitByte(OP_RETURN);
 }
 
+static u8
+MakeConstant(value Value)
+{
+	usize Constant = AddConstant(CurrentChunk(), Value);
+	if (Constant > UINT8_MAX)
+	{
+		Error("Too many constants in one chunk.");
+		return 0;
+	}
+
+	return (u8)Constant;
+}
+
+static void
+EmitConstant(value Value)
+{
+	EmitBytes(OP_CONSTANT, MakeConstant(Value));
+}
+
 static void
 EndCompiler(void)
 {
 	EmitReturn();
+}
+
+static void
+Grouping(void)
+{
+	Expression();
+	Consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
+}
+
+static void
+Number(void)
+{
+	f64 Value = strtod(Parser.Previous.Start, NULL);
+	EmitConstant(Value);
+}
+
+static void
+Unary(void)
+{
+	token_type OperatorType = Parser.Previous.Type;
+
+	// Compile the operand.
+	ParsePrecedence(PREC_UNARY);
+
+	// Emit the operator instruction.
+	switch (OperatorType)
+	{
+	case TOKEN_MINUS:
+		EmitByte(OP_NEGATE);
+		break;
+	default:
+		return; // Unreachable.
+	}
+}
+
+static void
+ParsePrecedence(precedence Precedence)
+{
+}
+
+static void
+Expression(void)
+{
+	ParsePrecedence(PREC_ASSIGNMENT);
 }
 
 bool
