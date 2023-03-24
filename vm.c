@@ -121,5 +121,5 @@ Interpret(const char* Source)
 	interpret_result Result = Run();
 
 	FreeChunk(&Chunk);
-	return result;
+	return Result;
 }
