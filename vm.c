@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "compiler.h"
 #include "debug.h"
 #include "vm.h"
 
@@ -103,9 +104,8 @@ Run(void)
 }
 
 interpret_result
-Interpret(chunk* Chunk)
+Interpret(const char* Source)
 {
-	Vm.Chunk = Chunk;
-	Vm.Ip = Vm.Chunk->Code;
-	return Run();
+	Compile(Source);
+	return INTERPRET_OK;
 }
