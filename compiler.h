@@ -2,7 +2,8 @@
 #define clox_compiler_h
 
 #include "common.h"
+#include "vm.h"
 
-void Compile(const char* Source);
+bool Compile(const char* Source, chunk* Chunk);
 
 #endif

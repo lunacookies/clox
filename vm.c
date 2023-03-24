@@ -106,6 +106,20 @@ Run(void)
 interpret_result
 Interpret(const char* Source)
 {
-	Compile(Source);
-	return INTERPRET_OK;
+	chunk Chunk;
+	InitializeChunk(&Chunk);
+
+	if (!Compile(Source, &Chunk))
+	{
+		FreeChunk(&Chunk);
+		return INTERPRET_COMPILE_ERROR;
+	}
+
+	Vm.Chunk = &Chunk;
+	Vm.Ip = Vm.Chunk->Code;
+
+	interpret_result Result = Run();
+
+	FreeChunk(&Chunk);
+	return result;
 }
