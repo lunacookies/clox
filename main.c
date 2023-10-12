@@ -5,6 +5,11 @@
 int main(int argc, char *argv[]) {
 	chunk chunk;
 	initChunk(&chunk);
+
+	int constant = addConstant(&chunk, 1.2);
+	writeChunk(&chunk, OP_CONSTANT);
+	writeChunk(&chunk, cast(uint8_t) constant);
+
 	writeChunk(&chunk, OP_RETURN);
 
 	disassembleChunk(&chunk, "test chunk");
