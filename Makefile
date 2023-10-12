@@ -1,41 +1,65 @@
-CC=clang
+CC := clang
 
-CFLAGS=\
+CFLAGS := \
 	-std=c99 \
 	-fshort-enums \
-	-fsanitize=address \
-	-g \
+	-ftrivial-auto-var-init=zero \
 	-W \
 	-Wall \
 	-Wextra \
 	-Wpedantic \
+	-Wconversion \
 	-Wimplicit-fallthrough \
-	-Wimplicit-int-conversion \
+	-Wmissing-prototypes \
 	-Wshadow \
 	-Wstrict-prototypes \
-	-Wmissing-prototypes \
 	-Wno-unused-parameter
 
-NAME=clox
-BUILD_DIR=out
-HEADERS=$(wildcard *.h)
-SOURCES=$(wildcard *.c)
-OBJECTS=$(addprefix $(BUILD_DIR)/, $(SOURCES:.c=.o))
+NAME := clox
+HEADERS := $(wildcard *.h)
+SOURCES := $(wildcard *.c)
 
-all: $(BUILD_DIR)/$(NAME) tidy
+BUILD_DIR := out
+BUILD_DIR_DEBUG := $(BUILD_DIR)/debug
+BUILD_DIR_RELEASE := $(BUILD_DIR)/release
 
-$(BUILD_DIR)/$(NAME): $(OBJECTS)
-	@ mkdir -p $(BUILD_DIR)
-	@ $(CC) $(CFLAGS) $^ -o $@
+DEBUG_OBJECTS += $(addprefix $(BUILD_DIR_DEBUG)/, $(SOURCES:.c=.o))
+RELEASE_OBJECTS += $(addprefix $(BUILD_DIR_RELEASE)/, $(SOURCES:.c=.o))
 
-$(BUILD_DIR)/%.o: %.c $(HEADERS)
-	@ mkdir -p $(BUILD_DIR)
+all: debug tidy
+
+debug: CFLAGS += -fsanitize=address,undefined -g3 -DDEBUG
+debug: $(BUILD_DIR_DEBUG)/$(NAME)
+
+release: CFLAGS += -O1 -flto -fwrapv
+release: $(BUILD_DIR_RELEASE)/$(NAME)
+
+$(BUILD_DIR_DEBUG)/$(NAME): $(DEBUG_OBJECTS) | $(BUILD_DIR_DEBUG)
+	@ printf "LD $@\n"
+	@ $(CC) $(CFLAGS) -o $@ $^
+
+$(BUILD_DIR_RELEASE)/$(NAME): $(RELEASE_OBJECTS) | $(BUILD_DIR_RELEASE)
+	@ printf "LD $@\n"
+	@ $(CC) $(CFLAGS) -o $@ $^
+
+$(BUILD_DIR_DEBUG)/%.o: %.c $(HEADERS) | $(BUILD_DIR_DEBUG)
+	@ printf "CC $@\n"
 	@ $(CC) $(CFLAGS) -c -o $@ $<
+
+$(BUILD_DIR_RELEASE)/%.o: %.c $(HEADERS) | $(BUILD_DIR_RELEASE)
+	@ printf "CC $@\n"
+	@ $(CC) $(CFLAGS) -c -o $@ $<
+
+$(BUILD_DIR_DEBUG):
+	@ mkdir -p $@
+
+$(BUILD_DIR_RELEASE):
+	@ mkdir -p $@
 
 tidy: $(HEADERS) $(SOURCES)
 	@ clang-format -i $^
 
 clean:
-	@ rm -r $(BUILD_DIR)
+	@ rm -rf $(BUILD_DIR)
 
-.PHONY: all tidy clean
+.PHONY: all debug release tidy clean
