@@ -13,12 +13,13 @@ typedef struct {
 	int count;
 	int capacity;
 	uint8_t *code;
+	int *lines;
 	valueArray constants;
 } chunk;
 
 void initChunk(chunk *chunk);
 void freeChunk(chunk *chunk);
-void writeChunk(chunk *chunk, uint8_t byte);
+void writeChunk(chunk *chunk, uint8_t byte, int line);
 int addConstant(chunk *chunk, value value);
 
 #endif
