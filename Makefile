@@ -2,8 +2,7 @@ CC := clang
 
 CFLAGS := \
 	-std=c99 \
-	-fshort-enums \
-	-ftrivial-auto-var-init=zero \
+	-ftrivial-auto-var-init=pattern \
 	-W \
 	-Wall \
 	-Wextra \
@@ -28,10 +27,10 @@ RELEASE_OBJECTS += $(addprefix $(BUILD_DIR_RELEASE)/, $(SOURCES:.c=.o))
 
 all: debug tidy
 
-debug: CFLAGS += -fsanitize=address,undefined -g3 -DDEBUG
+debug: CFLAGS += -fsanitize=address,undefined -ftrivial-auto-var-init=pattern -g3 -DDEBUG
 debug: $(BUILD_DIR_DEBUG)/$(NAME)
 
-release: CFLAGS += -O1 -flto -fwrapv
+release: CFLAGS += -O1 -flto -fwrapv -ftrivial-auto-var-init=zero
 release: $(BUILD_DIR_RELEASE)/$(NAME)
 
 $(BUILD_DIR_DEBUG)/$(NAME): $(DEBUG_OBJECTS) | $(BUILD_DIR_DEBUG)

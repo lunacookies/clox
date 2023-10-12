@@ -1,10 +1,11 @@
 AlignAfterOpenBracket: DontAlign
+AlignEscapedNewlines: DontAlign
 AlignTrailingComments: false
 AllowShortBlocksOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
-AllowShortIfStatementsOnASingleLine: false
-AllowShortLoopsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
 ContinuationIndentWidth: 8
 Cpp11BracedListStyle: false
 IndentWidth: 8
