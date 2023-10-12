@@ -7,4 +7,6 @@
 
 #define cast(type) (type)
 
+#define DebugTraceExecution
+
 #endif

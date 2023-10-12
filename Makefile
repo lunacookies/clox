@@ -27,7 +27,7 @@ RELEASE_OBJECTS += $(addprefix $(BUILD_DIR_RELEASE)/, $(SOURCES:.c=.o))
 
 all: debug tidy
 
-debug: CFLAGS += -fsanitize=address,undefined -ftrivial-auto-var-init=pattern -g3 -DDEBUG
+debug: CFLAGS += -fsanitize=address,undefined -ftrivial-auto-var-init=pattern -g3 -DDebug
 debug: $(BUILD_DIR_DEBUG)/$(NAME)
 
 release: CFLAGS += -O1 -flto -fwrapv -ftrivial-auto-var-init=zero
